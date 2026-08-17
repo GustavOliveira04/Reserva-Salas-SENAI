@@ -14,7 +14,6 @@ Facilitar o controle de reservas de laboratórios, auditório, biblioteca e outr
 * **SQLAlchemy**
 * **HTML5 / CSS3**
 * **Bootstrap**
-* **JavaScript**
 * **SMTP / Flask-Mail**
 
 ## ✨ Funcionalidades
