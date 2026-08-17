@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Recusar solicitação{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card shadow-sm plan-sheet">
+            <div class="card-body p-4">
+                <h1 class="h4 mb-1"><i class="bi bi-x-circle text-danger me-2"></i>Recusar solicitação</h1>
+                <p class="text-muted mb-4">
+                    Você pode informar o motivo da recusa — ele será enviado por e-mail ao professor.
+                </p>
+
+                <ul class="list-unstyled bg-light rounded p-3 mb-4 small">
+                    <li><strong>Professor(a):</strong> {{ reservation.professor_name }}</li>
+                    <li><strong>Espaço:</strong> {{ reservation.space.name }}</li>
+                    <li><strong>Turma:</strong> {{ reservation.turma }}</li>
+                    <li><strong>Matéria:</strong> {{ reservation.materia }}</li>
+                    <li><strong>Período:</strong> {{ reservation.start_datetime.strftime('%d/%m/%Y %H:%M') }} até {{ reservation.end_datetime.strftime('%d/%m/%Y %H:%M') }}</li>
+                </ul>
+
+                <form method="post">
+                    <div class="mb-3">
+                        <label for="reason" class="form-label">Motivo da recusa (opcional)</label>
+                        <textarea class="form-control" id="reason" name="reason" rows="4"
+                                  placeholder="Ex.: já existe outra atividade agendada nesse horário; espaço em manutenção; etc."></textarea>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-x-circle me-1"></i>Confirmar recusa
+                        </button>
+                        <a href="{{ url_for('admin_solicitacoes') }}" class="btn btn-outline-secondary">
+                            Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

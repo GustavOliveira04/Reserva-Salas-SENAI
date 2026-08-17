@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+
+{% block title %}Calendário — Reserva de Laboratórios{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <div>
+        <h1 class="h3 mb-1">Calendário de reservas</h1>
+        <p class="text-muted mb-0">Visualize os agendamentos confirmados por dia.</p>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+        <a class="btn btn-outline-primary" href="{{ url_for('index', year=prev_year, month=prev_month) }}">
+            <i class="bi bi-chevron-left"></i>
+        </a>
+        <span class="fw-semibold px-2">{{ month_name }} {{ year }}</span>
+        <a class="btn btn-outline-primary" href="{{ url_for('index', year=next_year, month=next_month) }}">
+            <i class="bi bi-chevron-right"></i>
+        </a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-9">
+        <div class="card shadow-sm calendar-card plan-sheet">
+            <div class="table-responsive">
+                <table class="table table-bordered calendar-table mb-0">
+                    <thead>
+                        <tr>
+                            {% for day_name in weekdays %}
+                                <th class="text-center">{{ day_name }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for week in weeks %}
+                            <tr>
+                                {% for day in week %}
+                                    {% set day_bookings = [] %}
+                                    {% for booking in day.bookings %}
+                                        {% set _ = day_bookings.append({
+                                            'space': booking.space.name,
+                                            'color': booking.space.color,
+                                            'start': booking.start_datetime.strftime('%d/%m/%Y %H:%M'),
+                                            'end': booking.end_datetime.strftime('%d/%m/%Y %H:%M'),
+                                            'professor': booking.professor_name,
+                                            'turma': booking.turma,
+                                            'materia': booking.materia,
+                                            'plano_aula': booking.plano_aula,
+                                        }) %}
+                                    {% endfor %}
+                                    <td class="calendar-day {% if not day.in_month %}other-month{% endif %} {% if day.is_today %}today{% endif %} {% if day.bookings %}has-bookings{% endif %}"
+                                        {% if day.bookings %}
+                                        data-bookings='{{ day_bookings | tojson }}'
+                                        data-day-label="{{ day.date.strftime('%d/%m/%Y') }}"
+                                        role="button"
+                                        tabindex="0"
+                                        {% endif %}>
+                                        <div class="day-number">{{ day.date.day }}</div>
+                                        <div class="bookings-list">
+                                            {% for booking in day.bookings %}
+                                                <div class="booking-pill" style="background: {{ booking.space.color }};">
+                                                    <strong>{{ booking.space.name }}</strong>
+                                                    <small>{{ booking.start_datetime.strftime('%H:%M') }}–{{ booking.end_datetime.strftime('%H:%M') }}</small>
+                                                    <small class="d-block">{{ booking.turma }} · {{ booking.materia }}</small>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3">
+        <div class="card shadow-sm mb-3">
+            <div class="card-body">
+                <h2 class="h6 text-uppercase text-muted">Espaços disponíveis</h2>
+                <ul class="list-unstyled mb-0">
+                    {% for space in spaces if space.active %}
+                        <li class="d-flex align-items-center gap-2 mb-2">
+                            <span class="legend-dot" style="background: {{ space.color }};"></span>
+                            {{ space.name }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-primary plan-sheet">
+            <div class="card-body">
+                <p class="sheet-label mb-2">Ação</p>
+                <h2 class="h6">Precisa reservar?</h2>
+                <p class="small text-muted">Preencha o formulário e aguarde a aprovação por e-mail.</p>
+                <a href="{{ url_for('reservar') }}" class="btn btn-primary w-100">
+                    Solicitar reserva
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de detalhes do dia -->
+<div class="modal fade" id="dayBookingsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-calendar-event me-2"></i>
+                    Agendamentos — <span id="dayBookingsDate"></span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body" id="dayBookingsBody">
+                <!-- preenchido via JS -->
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    var modalEl = document.getElementById("dayBookingsModal");
+    var modal = new bootstrap.Modal(modalEl);
+    var dateLabel = document.getElementById("dayBookingsDate");
+    var body = document.getElementById("dayBookingsBody");
+
+    function escapeHtml(str) {
+        var div = document.createElement("div");
+        div.textContent = str;
+        return div.innerHTML;
+    }
+
+    document.querySelectorAll(".calendar-day.has-bookings").forEach(function (cell) {
+        cell.addEventListener("click", function () {
+            var bookings = JSON.parse(cell.dataset.bookings);
+            dateLabel.textContent = cell.dataset.dayLabel;
+
+            body.innerHTML = bookings.map(function (b) {
+                return (
+                    '<div class="border rounded p-3 mb-3">' +
+                        '<div class="d-flex justify-content-between align-items-start mb-2">' +
+                            '<span class="badge text-white" style="background:' + b.color + '">' + escapeHtml(b.space) + '</span>' +
+                            '<small class="text-muted">' + escapeHtml(b.start) + ' – ' + escapeHtml(b.end) + '</small>' +
+                        '</div>' +
+                        '<p class="mb-1"><strong>Professor(a):</strong> ' + escapeHtml(b.professor) + '</p>' +
+                        '<p class="mb-1"><strong>Turma:</strong> ' + escapeHtml(b.turma) + '</p>' +
+                        '<p class="mb-1"><strong>Matéria:</strong> ' + escapeHtml(b.materia) + '</p>' +
+                        '<p class="mb-0"><strong>Plano de aula:</strong><br>' + escapeHtml(b.plano_aula).replace(/\n/g, "<br>") + '</p>' +
+                    '</div>'
+                );
+            }).join("");
+
+            modal.show();
+        });
+
+        // acessibilidade: permitir abrir com Enter/Espaço
+        cell.addEventListener("keydown", function (e) {
+            if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                cell.click();
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

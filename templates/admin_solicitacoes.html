@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}Solicitações pendentes{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Painel administrativo</h1>
+        <p class="text-muted mb-0">Aprove ou recuse solicitações. O retorno será enviado ao e-mail informado pelo professor.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{{ url_for('admin_espacos') }}" class="btn btn-outline-primary">
+            <i class="bi bi-building-gear me-1"></i>Gerenciar espaços
+        </a>
+        <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">Voltar ao calendário</a>
+        <a href="{{ url_for('admin_logout') }}" class="btn btn-outline-danger">
+            <i class="bi bi-box-arrow-right me-1"></i>Sair
+        </a>
+    </div>
+</div>
+
+{% if not requests %}
+    <div class="alert alert-info">Nenhuma solicitação pendente no momento.</div>
+{% else %}
+    <h2 class="h5 mb-3">Solicitações pendentes</h2>
+    <div class="row g-3 mb-5">
+        {% for item in requests %}
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex flex-column flex-md-row justify-content-between gap-3">
+                            <div>
+                                <h2 class="h5 mb-2">{{ item.professor_name }} — {{ item.space.name }}</h2>
+                                <ul class="list-unstyled mb-0 small">
+                                    <li><strong>E-mail do professor:</strong> {{ item.professor_email }}</li>
+                                    <li><strong>Turma:</strong> {{ item.turma }}</li>
+                                    <li><strong>Matéria:</strong> {{ item.materia }}</li>
+                                    <li><strong>Período:</strong> {{ item.start_datetime.strftime('%d/%m/%Y %H:%M') }} até {{ item.end_datetime.strftime('%d/%m/%Y %H:%M') }}</li>
+                                    <li><strong>Plano de aula:</strong> {{ item.plano_aula }}</li>
+                                    <li><strong>Solicitado em:</strong> {{ item.created_at.strftime('%d/%m/%Y %H:%M') }}</li>
+                                </ul>
+                            </div>
+                            <div class="d-flex flex-column gap-2 align-self-start" style="min-width: 140px;">
+                                <a href="{{ url_for('aprovar', token=item.token) }}" class="btn btn-success">
+                                    Aceitar
+                                </a>
+                                <a href="{{ url_for('recusar', token=item.token) }}" class="btn btn-outline-danger">
+                                    Recusar
+                                </a>
+                                <form method="post" action="{{ url_for('excluir_solicitacao', request_id=item.id) }}"
+                                      onsubmit="return confirm('Excluir esta solicitação permanentemente?');">
+                                    <button type="submit" class="btn btn-outline-secondary w-100">
+                                        <i class="bi bi-trash me-1"></i>Excluir
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<h2 class="h5 mb-3">Reservas confirmadas</h2>
+{% if not bookings %}
+    <div class="alert alert-info">Nenhuma reserva confirmada no momento.</div>
+{% else %}
+    <div class="row g-3">
+        {% for booking in bookings %}
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex flex-column flex-md-row justify-content-between gap-3">
+                            <div>
+                                <h2 class="h5 mb-2">{{ booking.professor_name }} — {{ booking.space.name }}</h2>
+                                <ul class="list-unstyled mb-0 small">
+                                    <li><strong>Turma:</strong> {{ booking.turma }}</li>
+                                    <li><strong>Matéria:</strong> {{ booking.materia }}</li>
+                                    <li><strong>Período:</strong> {{ booking.start_datetime.strftime('%d/%m/%Y %H:%M') }} até {{ booking.end_datetime.strftime('%d/%m/%Y %H:%M') }}</li>
+                                </ul>
+                            </div>
+                            <div class="align-self-start" style="min-width: 140px;">
+                                <form method="post" action="{{ url_for('excluir_reserva', booking_id=booking.id) }}"
+                                      onsubmit="return confirm('Excluir esta reserva do calendário permanentemente?');">
+                                    <button type="submit" class="btn btn-outline-danger w-100">
+                                        <i class="bi bi-trash me-1"></i>Excluir
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Gerenciar espaços{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Gerenciar espaços</h1>
+        <p class="text-muted mb-0">
+            Adicione novos espaços ou interdite temporariamente um espaço já existente
+            (ele deixa de aparecer no formulário de solicitação, mas o histórico de
+            reservas é mantido).
+        </p>
+    </div>
+    <a href="{{ url_for('admin_solicitacoes') }}" class="btn btn-outline-secondary">
+        Voltar ao painel
+    </a>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        <h2 class="h5 mb-3">Espaços cadastrados</h2>
+        <div class="row g-3">
+            {% for space in spaces %}
+                <div class="col-12">
+                    <div class="card shadow-sm">
+                        <div class="card-body d-flex justify-content-between align-items-center gap-3">
+                            <div class="d-flex align-items-center gap-3">
+                                <span class="legend-dot" style="background: {{ space.color }}; width:16px; height:16px;"></span>
+                                <div>
+                                    <div class="fw-semibold">
+                                        {{ space.name }}
+                                        {% if not space.active %}
+                                            <span class="badge bg-secondary ms-1">Interditado</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="small text-muted">
+                                        {{ dict(space_types).get(space.space_type, space.space_type) }}
+                                        · slug: <code>{{ space.slug }}</code>
+                                    </div>
+                                </div>
+                            </div>
+                            <form method="post" action="{{ url_for('alternar_espaco', space_id=space.id) }}">
+                                {% if space.active %}
+                                    <button type="submit" class="btn btn-outline-danger btn-sm"
+                                            onclick="return confirm('Interditar {{ space.name|e }}? Ele deixará de aparecer para novas solicitações.');">
+                                        <i class="bi bi-slash-circle me-1"></i>Interditar
+                                    </button>
+                                {% else %}
+                                    <button type="submit" class="btn btn-outline-success btn-sm">
+                                        <i class="bi bi-check-circle me-1"></i>Reativar
+                                    </button>
+                                {% endif %}
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <h2 class="h5 mb-3">Adicionar novo espaço</h2>
+        <div class="card shadow-sm plan-sheet">
+            <div class="card-body">
+                <form method="post" action="{{ url_for('criar_espaco') }}">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Nome do espaço</label>
+                        <input type="text" class="form-control" id="name" name="name"
+                               placeholder="Ex.: Sala de Reuniões" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="space_type" class="form-label">Tipo</label>
+                        <select class="form-select" id="space_type" name="space_type">
+                            {% for value, label in space_types %}
+                                <option value="{{ value }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-plus-circle me-1"></i>Adicionar espaço
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

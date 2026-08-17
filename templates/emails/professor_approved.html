@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<body style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
+    <h2 style="color:#198754;">Solicitação aprovada</h2>
+
+    <p>Olá, <strong>{{ request.professor_name }}</strong>,</p>
+
+    <p>
+        Sua solicitação de reserva do <strong>{{ request.space.name }}</strong> foi
+        <strong>aprovada</strong>.
+    </p>
+
+    <ul>
+        <li><strong>Período:</strong> {{ request.start_datetime.strftime('%d/%m/%Y %H:%M') }} até {{ request.end_datetime.strftime('%d/%m/%Y %H:%M') }}</li>
+        <li><strong>Turma:</strong> {{ request.turma }}</li>
+        <li><strong>Matéria:</strong> {{ request.materia }}</li>
+        <li><strong>Plano de aula:</strong> {{ request.plano_aula }}</li>
+    </ul>
+
+    <p>O agendamento já aparece no calendário do site.</p>
+</body>
+</html>

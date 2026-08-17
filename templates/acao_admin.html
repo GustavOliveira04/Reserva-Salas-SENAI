@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Resultado da solicitação{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card shadow-sm plan-sheet">
+            <div class="card-body p-4 text-center">
+                {% if action == 'approved' %}
+                    <div class="display-4 text-success mb-3"><i class="bi bi-check-circle"></i></div>
+                    <h1 class="h4">Reserva aprovada</h1>
+                {% elif action == 'rejected' %}
+                    <div class="display-4 text-danger mb-3"><i class="bi bi-x-circle"></i></div>
+                    <h1 class="h4">Reserva recusada</h1>
+                {% elif action == 'conflict' %}
+                    <div class="display-4 text-warning mb-3"><i class="bi bi-exclamation-triangle"></i></div>
+                    <h1 class="h4">Conflito de horário</h1>
+                {% endif %}
+
+                <p class="text-muted">
+                    Solicitação de <strong>{{ reservation.professor_name }}</strong>
+                    para <strong>{{ reservation.space.name }}</strong>.
+                </p>
+
+                <ul class="list-unstyled text-start bg-light rounded p-3 mb-4">
+                    <li><strong>Turma:</strong> {{ reservation.turma }}</li>
+                    <li><strong>Matéria:</strong> {{ reservation.materia }}</li>
+                    <li><strong>Início:</strong> {{ reservation.start_datetime.strftime('%d/%m/%Y %H:%M') }}</li>
+                    <li><strong>Término:</strong> {{ reservation.end_datetime.strftime('%d/%m/%Y %H:%M') }}</li>
+                    <li><strong>Plano de aula:</strong> {{ reservation.plano_aula }}</li>
+                    {% if action in ('rejected', 'conflict') and reservation.rejection_reason %}
+                        <li><strong>Motivo da recusa:</strong> {{ reservation.rejection_reason }}</li>
+                    {% endif %}
+                </ul>
+
+                <a href="{{ url_for('index') }}" class="btn btn-primary">Ver calendário</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
