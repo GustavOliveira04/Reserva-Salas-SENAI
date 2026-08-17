@@ -1,66 +1,104 @@
-# Reserva de Laboratórios
+# 📅 Sistema de Reserva de Espaços
 
-Sistema web em Flask + Bootstrap para solicitação e aprovação de reservas de laboratórios, auditório e biblioteca.
+Sistema web para **solicitação e gerenciamento de reservas de espaços institucionais**, permitindo que professores solicitem horários e administradores aprovem ou recusem as solicitações.
 
-## Funcionalidades
+## 🎯 Objetivo
 
-- Calendário mensal com agendamentos confirmados
-- Formulário de solicitação para professores
-- Envio de e-mail ao administrador com botões de aceitar/recusar
-- Notificação automática ao professor após aprovação ou recusa
-- Detecção de conflito de horário ao aprovar
+Facilitar o controle de reservas de laboratórios, auditório, biblioteca e outros espaços, evitando conflitos de horários e centralizando o processo em um único sistema.
 
-## Espaços disponíveis
+## ⚙️ Tecnologias
 
-- Laboratório 1, 2 e 3
-- Auditório
-- Biblioteca
+* **Python**
+* **Flask**
+* **SQLite**
+* **SQLAlchemy**
+* **HTML5 / CSS3**
+* **Bootstrap**
+* **JavaScript**
+* **SMTP / Flask-Mail**
 
-## Instalação
+## ✨ Funcionalidades
+
+* 📅 Solicitação de reservas
+* 🏫 Gerenciamento de espaços
+* ⚠️ Verificação de conflitos de horário
+* 📆 Visualização das reservas em calendário
+* 📧 Envio de solicitações e notificações por e-mail
+* ✅ Aprovação e recusa de reservas
+* 🔐 Área administrativa
+
+## 🚀 Instalação
+
+### 1. Clone o projeto
 
 ```bash
+git clone <URL_DO_REPOSITORIO>
 cd lab-reservas
-python -m venv venv
-venv\Scripts\activate
-pip install -r requirements.txt
-copy .env.example .env
 ```
 
-Edite o arquivo `.env` com suas credenciais SMTP e o e-mail do administrador.
+### 2. Crie o ambiente virtual
 
-## Executar
+```bash
+python -m venv venv
+```
+
+**Windows:**
+
+```bash
+venv\Scripts\activate
+```
+
+**Linux/macOS:**
+
+```bash
+source venv/bin/activate
+```
+
+### 3. Instale as dependências
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Configure as variáveis de ambiente
+
+Copie `.env.example` para `.env` e configure as informações necessárias, principalmente as credenciais de e-mail.
+
+```env
+SECRET_KEY=sua-chave-secreta
+ADMIN_EMAIL=seu-email
+ADMIN_PASSWORD=sua-senha
+
+MAIL_USERNAME=seu-email
+MAIL_PASSWORD=sua-senha-de-app
+```
+
+### 5. Execute o projeto
 
 ```bash
 python app.py
 ```
 
-Acesse: http://127.0.0.1:5000
+Acesse:
 
-## Configuração de e-mail
-
-Configure no `.env`:
-
-- `ADMIN_EMAIL` — quem recebe as solicitações
-- `MAIL_USERNAME` / `MAIL_PASSWORD` — credenciais SMTP
-- `BASE_URL` — URL pública do site (necessária para os links nos e-mails)
-
-> **Gmail:** use uma [senha de app](https://support.google.com/accounts/answer/185833), não a senha normal da conta.
-
-## Fluxo
-
-1. Professor preenche o formulário em `/reservar`
-2. Administrador recebe e-mail com detalhes e links **Aceitar** / **Recusar**
-3. Se aceito → reserva aparece no calendário e professor recebe confirmação
-4. Se recusado → professor recebe e-mail de recusa
-
-## Estrutura
-
+```text
+http://127.0.0.1:5000
 ```
+
+## 📁 Estrutura
+
+```text
 lab-reservas/
-├── app.py              # Rotas e lógica principal
-├── config.py           # Configurações
-├── models.py           # Modelos do banco
-├── email_service.py    # Envio de e-mails
-├── templates/          # HTML (Bootstrap)
-└── static/css/         # Estilos do calendário
+├── app.py
+├── config.py
+├── models.py
+├── email_service.py
+├── requirements.txt
+├── .env.example
+├── templates/
+└── static/
 ```
+
+## 👨‍💻 Projeto
+
+Sistema desenvolvido para **gerenciamento de reservas de espaços institucionais** utilizando Python e Flask.
