@@ -67,9 +67,10 @@ def admin_login_required(view_func):
 
 
 SPACES_SEED = [
-    ("Laboratório 1", "lab-1", "laboratorio"),
-    ("Laboratório 2", "lab-2", "laboratorio"),
-    ("Laboratório 3", "lab-3", "laboratorio"),
+    ("Laboratório de Informática 06", "lab-06", "laboratorio"),
+    ("Laboratório de Informática 19", "lab-19", "laboratorio"),
+    ("Laboratório de Informática 21", "lab-21", "laboratorio"),
+    ("SENAI Lab", "Senai-lab", "laboratorio"),
     ("Auditório", "auditorio", "auditorio"),
     ("Biblioteca", "biblioteca", "biblioteca"),
 ]
